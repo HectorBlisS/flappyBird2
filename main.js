@@ -4,6 +4,7 @@ let ctx = canvas.getContext('2d')
 //ctx.fillRect(0, 0, 500, 500)
 
 // gloobals
+let gravity = .98
 let interval
 let frames = 0
 let images = {
@@ -37,6 +38,34 @@ let floor = new GameObject({
     height: 80,
     image: images.floor
 })
+let bird = new GameObject({
+    x: 150,
+    y: 200,
+    width: 40,
+    height: 30,
+    image: images.bird
+})
+
+// mods
+bird.vy = 0
+bird.jumpStrength = 20
+bird.draw = function () {
+    if ((this.y + this.height) < floor.y) {
+        this.y += this.vy
+        this.vy += gravity  // acelaración
+    } else {
+        this.vy = 0
+    }
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+}
+
+bg.draw = function () {
+    if (this.x > canvas.width) this.x = 0
+    this.x += .2
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+    ctx.drawImage(this.img, this.x - this.width, this.y, this.width, this.height)
+}
+
 floor.draw = function () {
     if ((this.x + this.width) < 0) {
         this.x = 0
@@ -55,10 +84,15 @@ function update() {
     frames++
     bg.draw()
     floor.draw()
+    bird.draw()
 }
 function stop() { }  // pause, stop, partial stop (bg, flappy)
 
 // aux functions
 
 // listeners
+addEventListener('keydown', e => {
+    if (e.keyCode === 32) bird.y -= bird.jumpStrength * 2
+})
+
 start()

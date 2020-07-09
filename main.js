@@ -16,6 +16,9 @@ let images = {
 
 }
 
+//NEW:
+let keys = {}
+
 // clases
 class GameObject {
     constructor(config = {}) {
@@ -48,13 +51,25 @@ let bird = new GameObject({
 
 // mods
 bird.vy = 0
-bird.jumpStrength = 20
+bird.jumpStrength = 7
+bird.move = function () {
+    if (keys[32] || keys[38]) {
+        console.log("simon")
+        this.y--
+        this.vy = 0
+        this.vy += -this.jumpStrength * 2
+    }
+}
 bird.draw = function () {
+    //NEW
+    this.move()
+
     if ((this.y + this.height) < floor.y) {
         this.y += this.vy
         this.vy += gravity  // acelaración
     } else {
         this.vy = 0
+        this.y = floor.y - this.height
     }
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
 }
@@ -92,7 +107,11 @@ function stop() { }  // pause, stop, partial stop (bg, flappy)
 
 // listeners
 addEventListener('keydown', e => {
-    if (e.keyCode === 32) bird.y -= bird.jumpStrength * 2
+    keys[e.keyCode] = true
+})
+
+addEventListener('keyup', e => {
+    keys[e.keyCode] = false
 })
 
 start()
